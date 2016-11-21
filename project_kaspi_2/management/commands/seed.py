@@ -43,7 +43,6 @@ class Command(BaseCommand):
 			else:
 				text = unicode(item['district'])
 			query = unicode(item['locality']) + " " + text + " "+ unicode(item['house'])
-			print query
 			threads.append(threading.Thread(target=self.parseUrl, args=(query, item)))
 
 		self.runThreads(threads)
