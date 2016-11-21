@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
-
+from elasticsearch import Elasticsearch
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'project_kaspi_2'
+    'rest_framework',
+    'rest_framework_gis',
+    
+    'project_kaspi_2',
 ]
 
 MIDDLEWARE = [
@@ -120,3 +123,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ES_CLIENT = Elasticsearch(
+    ['http://localhost:9200/']
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.TemplateHTMLRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'TIME_FORMAT': '%H:%M',
+    'TIME_INPUT_FORMAT': '%H:%M',
+}

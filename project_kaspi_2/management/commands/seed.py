@@ -4,8 +4,12 @@ import sys
 import time
 import json
 import threading
-
+from elasticsearch.client import IndicesClient
 from project_kaspi_2.models import Venue
+from django.conf import settings
+from elasticsearch.helpers import bulk
+from django.contrib.gis import geos
+from project_kaspi_2.es_mappings import es_mappings, es_ind_settings, model_es_indices
 
 class Command(BaseCommand):
 	
@@ -14,7 +18,7 @@ class Command(BaseCommand):
 		'version': '1.3',
 		'key': 'ruczoy1743'
 	}
-
+	es_index_name = 'project_kaspi_2'
 	success_count = 0
 	error_no_results = 0
 	error_connection_count = 0
@@ -30,17 +34,23 @@ class Command(BaseCommand):
 			for line in f:
 				i += 1
 				data.append(json.loads(line))
-				if(i == 250): break
+				if(i == 100): break
 		threads = []
 
 		for item in data:
-			query = unicode(item['district']) + unicode(item['street']) + unicode(item['house'])
+			if (item['street']):
+				text = unicode(item['street']) 
+			else:
+				text = unicode(item['district'])
+			query = unicode(item['locality']) + " " + text + " "+ unicode(item['house'])
+			print query
 			threads.append(threading.Thread(target=self.parseUrl, args=(query, item)))
 
 		self.runThreads(threads)
 		self.printResults()
 
-
+		self.recreate_index()
+		self.push_db_to_index()
 
 	def printResults(self):
 		print 'Success points: ' + str(self.success_count)
@@ -50,7 +60,7 @@ class Command(BaseCommand):
 
 
 
-	def runThreads(self, threads, thread_limit=40):
+	def runThreads(self, threads, thread_limit=30):
 		process = 0.0
 		length = len(threads)
 		for i in range(length):
@@ -118,7 +128,32 @@ class Command(BaseCommand):
 				street = street,
 				point_str = point_str
 			).save()
-			self.success_venue_count += 1
 		except:
-			self.error_venue_exist += 1
-		
+			self.error_no_results += 1
+	
+	def recreate_index(self):
+		indices_client = IndicesClient(client = settings.ES_CLIENT)
+		index_name = self.es_index_name
+		if indices_client.exists(index_name):
+			indices_client.delete(index = index_name)
+		indices_client.create(index = index_name, body = es_ind_settings)
+		model_name = 'Venue'
+		indices_client.put_mapping(
+			doc_type=model_es_indices[model_name]['type'],
+			body=es_mappings[model_name],
+			index=index_name
+			)
+
+	def push_db_to_index(self):
+		data = [self.convert_for_bulk(venue, 'create') for venue in Venue.objects.all()]
+		bulk(client=settings.ES_CLIENT, actions=data, stats_only=True)
+	
+	def convert_for_bulk(self, django_object, action = None):
+		data = django_object.es_repr()
+		metadata = {
+			'_op_type': action,
+			'_index': model_es_indices[django_object.__class__.__name__]['index_name'],
+			'_type': model_es_indices[django_object.__class__.__name__]['type']
+		}
+		data.update(**metadata)
+		return data

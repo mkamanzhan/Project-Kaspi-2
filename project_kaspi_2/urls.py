@@ -15,7 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from project_kaspi_2 import views
+
+
+from rest_framework.urlpatterns import format_suffix_patterns 
+
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+	url(r'^$', views.index, name='index'),
+    url(r'^search/$', views.SearchView.as_view()),
 ]
+
+
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['html','json'])  

@@ -1,0 +1,103 @@
+body{
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+}
+
+#map{
+	width: 100%;
+	height: 100%;
+}
+
+#my-block{
+	margin: 10px;
+	z-index: 500;
+}
+
+/* --- --- Search Block --- --- */
+
+#my-search{
+	border-radius: 5px;
+
+	background-color: rgba(30,30,30,0.7);
+	padding: 5px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.7);
+	
+	margin-bottom: 10px;
+}
+
+#my-search span{
+	color: white;
+}
+
+#my-search img{
+	height: 34px;
+}
+
+#my-search input{
+	display: inline-block;
+	margin-left: 5px;
+	
+	width: 76%;
+}
+
+#my-search .col-md-12{
+	padding: 5px;
+}
+
+/* --- --- List Block --- --- */
+
+#my-list-items{
+	border:1px solid lightgrey;
+	border-radius: 5px;
+
+	background-color: #fff;
+	
+	overflow-x: auto;
+
+	max-height: 80vh;
+
+    box-shadow: 5px 5px 5px #888888;
+}
+
+#my-list-items .item{
+	padding: 5px;
+	border-bottom:1px solid lightgrey;
+}
+
+#my-list-items .item:hover{
+	background-color: #fed700;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+#my-list-items .item.selected{
+	background-color: #ef4735;
+	color: white;
+	font-weight: bold;
+}
+
+#my-list-items img{
+	width: 100%
+}
+
+#my-list-items h4{
+	padding: 10px;
+	text-align: center;	
+}
+
+#my-panel{
+	background-color: #fff;
+    margin-bottom: 10px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 5px 15px;
+    box-shadow: 5px 5px 5px #888888;
+}
+
+#my-list-items span{
+	font-size: 25px;
+    float: left;
+    padding: 5px;
+    padding-right: 10px;
+}

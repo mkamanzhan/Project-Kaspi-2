@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% load static %}
+		<link rel="stylesheet" type="text/css" href="{% static 'style/index.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'libs/bootstrap/css/bootstrap.min.css' %}">
+
+		<script type="text/javascript" src="{% static 'libs/jquery/jquery-2.2.4.min.js'%}"></script>
+		<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+		<script type="text/javascript" src="{% static 'js/map.js' %}"></script>
+		<title>Map</title>
+	</head>
+	<body>
+
+		<div id="map">
+			<div class="col-md-3" id="my-block" style="display: none;">
+				<div class="row" id="my-search">
+					<div class="col-md-12">
+						<img src="{% static 'img/logo.png' %}">
+					
+						<input class="form-control" type="text" name="search" placeholder="Поиск">	
+				
+						<button class="btn btn-primary" id="my-search-button">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>	
+						</button>	
+					</div>
+				</div>
+				
+				<div class="row my-hidden" id="my-panel" style="display: none;">
+					Точек: <span id="my-count">15</span>
+					<button type="button" class="close" id="my-clear">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="row my-hidden" id="my-list-items" style="display: none;">
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
