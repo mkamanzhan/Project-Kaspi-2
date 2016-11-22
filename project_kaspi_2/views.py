@@ -11,9 +11,9 @@ from rest_framework.response import Response
 def index(request):
 	return render(request, 'index.html')
 
-class SearchView(APIView):#prednaznacheno dlya poiska cherez get zapros
-	#@method_decorator(xframe_options_exempt)
+class SearchView(APIView):
 	renderer_classes = (JSONRenderer,)
+	
 	def get(self, request):
 		term = request.GET.get('text')
 		result_of_search = Venue.es_search(term)

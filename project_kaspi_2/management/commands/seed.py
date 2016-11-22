@@ -34,7 +34,7 @@ class Command(BaseCommand):
 			for line in f:
 				i += 1
 				data.append(json.loads(line))
-				if(i == 100): break
+				#if(i == 100): break
 		threads = []
 
 		for item in data:
@@ -91,7 +91,7 @@ class Command(BaseCommand):
 		params = self.params
 		params['q'] = query
 		try:
-			r = requests.get(self.url, params=params).json()
+			r = requests.get(self.url, params=params, timeout=5).json()
 			if(r['response_code'] == "200"):
 				self.saveVenue(r['result'][0], address)
 				self.success_count += 1
