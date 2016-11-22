@@ -72,14 +72,14 @@ class Venue(models.Model):
                             "should": [
                             	{ "multi_match": {
                                     "type": "cross_fields",
-                                    "fields": ["street", "district"],
+                                    "fields": ["street", "house"],
                                     "fuzziness": "AUTO",
                                     "query": term,
                                     "boost": 10
                                 } },
                                 { "multi_match": {
                                     "type": "cross_fields",
-                                    "fields": ["house"],
+                                    "fields": ["district"],
                                     "fuzziness": "AUTO",
                                     "query": term,
                                     "boost": 5
@@ -94,7 +94,7 @@ class Venue(models.Model):
                     }
                 }
             },
-            "size": 20
+            "size": 50
 		}
 		return json.dumps(query)
 

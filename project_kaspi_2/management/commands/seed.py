@@ -34,7 +34,7 @@ class Command(BaseCommand):
 			for line in f:
 				i += 1
 				data.append(json.loads(line))
-				#if(i == 100): break
+				if(i == 5000): break
 		threads = []
 
 		for item in data:

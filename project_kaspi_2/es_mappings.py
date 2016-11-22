@@ -39,7 +39,7 @@ es_ind_settings = {
                 "new_analyzer" : {
                     "type" : "custom",
                     "tokenizer" : "standard",
-                    "filter" : ["my_stopwords", "asciifolding", "lowercase", "snowball", "worddelimiter", "stemmer", "ngram_filter"]
+                    "filter" : ["my_stopwords", "asciifolding", "lowercase", "worddelimiter", "ngram_filter"]
                 },
                 "new_search_analyzer" : {
                     "type" : "custom",
