@@ -27,22 +27,25 @@ class Command(BaseCommand):
 	start_time = 0
 	
 	def handle(self, *args, **options):
+		start_time = time.time()
 		Venue.objects.all().delete()
 		data = []
 		with open('data.json') as f:
-			i = 0
+			#i = 0
 			for line in f:
-				i += 1
+				#i += 1
 				data.append(json.loads(line))
-				if(i == 5000): break
+				#if(i == 5000): break
 		threads = []
 
 		for item in data:
-			if (item['street']):
-				text = unicode(item['street']) 
-			else:
-				text = unicode(item['district'])
-			query = unicode(item['locality']) + " " + text + " "+ unicode(item['house'])
+			text = ''
+			if (item['district'] and item['street']):
+				text = unicode(item['district']) + ", "+unicode(item['street'])
+			elif (item['district']): text = unicode(item['district'])
+			elif (item['street']): text = unicode(item['street'])
+
+			query = unicode(item['locality']) + ", " + text + ", "+ unicode(item['house'])
 			threads.append(threading.Thread(target=self.parseUrl, args=(query, item)))
 
 		self.runThreads(threads)
@@ -50,11 +53,12 @@ class Command(BaseCommand):
 
 		self.recreate_index()
 		self.push_db_to_index()
+		print '\nTotal execution time: {:.3f}'.format(time.time() - start_time) + 'sec'
 
 	def printResults(self):
 		print 'Success points: ' + str(self.success_count)
 		print 'No results: ' + str(self.error_no_results)
-		print 'Can\'t connect to Page: ' + str(self.error_connection_count)
+		print 'Can\'t connect: ' + str(self.error_connection_count)
 		print 'Can\'t decode JSON:' + str(self.error_decode_count)
 
 
@@ -97,10 +101,10 @@ class Command(BaseCommand):
 				self.success_count += 1
 			else:
 				self.error_no_results += 1
-		except requests.exceptions.ConnectionError:
-			self.error_connection_count += 1
 		except ValueError:
 			self.error_decode_count += 1
+		except:
+			self.error_connection_count += 1
 
 
 
