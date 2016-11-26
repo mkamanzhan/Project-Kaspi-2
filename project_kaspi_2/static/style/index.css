@@ -26,6 +26,18 @@ body{
 	margin-bottom: 10px;
 }
 
+#my-search .row div{
+	padding: 0 5px;
+}
+
+#my-search .row button{
+	width: 100%;
+}
+
+#my-search .row .col-sm-9{
+	padding: 0 10px;
+}
+
 #my-search span{
 	color: white;
 }
@@ -36,9 +48,7 @@ body{
 
 #my-search input{
 	display: inline-block;
-	margin-left: 5px;
-	
-	width: 76%;
+	margin-left: 10px; 
 }
 
 #my-search .col-md-12{

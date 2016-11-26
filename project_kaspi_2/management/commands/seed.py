@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand
 import requests
 import sys
+reload(sys)  
+sys.setdefaultencoding('utf8')
 import time
 import json
 import threading
@@ -12,12 +15,22 @@ from django.contrib.gis import geos
 from project_kaspi_2.es_mappings import es_mappings, es_ind_settings, model_es_indices
 
 class Command(BaseCommand):
-	
+	'''
 	url = "http://catalog.api.2gis.ru/geo/search"
 	params = {
 		'version': '1.3',
-		'key': 'ruczoy1743'
+		'key': 'ruczoy1743',	
 	}
+	'''
+	url = "https://catalog.api.2gis.ru/2.0/geo/search"
+	params = {
+		'page': 1,
+		'page_size': 12,
+		'region_id': 67,
+		'key': 'ruczoy1743',
+		'fields': 'items.geometry.centroid'
+	}
+
 	es_index_name = 'project_kaspi_2'
 	success_count = 0
 	error_no_results = 0
@@ -35,7 +48,7 @@ class Command(BaseCommand):
 			for line in f:
 				#i += 1
 				data.append(json.loads(line))
-				#if(i == 5000): break
+				#if(i == 3000): break
 		threads = []
 
 		for item in data:
@@ -45,7 +58,12 @@ class Command(BaseCommand):
 			elif (item['district']): text = unicode(item['district'])
 			elif (item['street']): text = unicode(item['street'])
 
-			query = unicode(item['locality']) + ", " + text + ", "+ unicode(item['house'])
+			query = text + ", "+ item['house']
+			query = query.replace('УЛИЦА ','ул ')
+			query = query.replace('ГОРОД ','г ')
+			query = query.replace('дом ','д ')
+			query = query.replace('МИКРОРАЙОН ','мкр ')
+			query = query.replace('РАЙОН В ГОРОДЕ ',' ')
 			threads.append(threading.Thread(target=self.parseUrl, args=(query, item)))
 
 		self.runThreads(threads)
@@ -63,7 +81,7 @@ class Command(BaseCommand):
 
 
 
-	def runThreads(self, threads, thread_limit=30):
+	def runThreads(self, threads, thread_limit=50):
 		process = 0.0
 		length = len(threads)
 		for i in range(length):
@@ -96,8 +114,8 @@ class Command(BaseCommand):
 		params['q'] = query
 		try:
 			r = requests.get(self.url, params=params, timeout=5).json()
-			if(r['response_code'] == "200"):
-				self.saveVenue(r['result'][0], address)
+			if(r['meta']['code'] == 200):
+				self.saveVenue(r['result']['items'][0]['geometry'], address)
 				self.success_count += 1
 			else:
 				self.error_no_results += 1
@@ -120,19 +138,18 @@ class Command(BaseCommand):
 		street = address['street']
 		point_str = point['centroid']
 
-		try:
-			Venue(
-				rec_id = rec_id,
-				post_index = post_index,
-				region = region,
-				locality = locality,
-				house = house,
-				district = district,
-				street = street,
-				point_str = point_str
-			).save()
-		except:
-			self.error_no_results += 1
+		
+		Venue(
+			rec_id = rec_id,
+			post_index = post_index,
+			region = region,
+			locality = locality,
+			house = house,
+			district = district,
+			street = street,
+			point_str = point_str
+		).save()
+		
 	
 	def recreate_index(self):
 		indices_client = IndicesClient(client = settings.ES_CLIENT)
